@@ -1,0 +1,8 @@
+---
+- hosts: node
+  tasks:
+    - action: shell /bin/ls /tmp
+      register: list_tmp_files
+    - assert:
+        that:
+          "'pepito' in list_tmp_files.stdout_lines" 

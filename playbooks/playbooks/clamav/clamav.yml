@@ -1,0 +1,261 @@
+---
+- hosts: node
+  tasks:
+  - name: Install a list of packages of clamav Ubuntu
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+       - clamav
+       - clamav-daemon
+       - apparmor-utils
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Download epel repo CentOS & RHEL 7
+    get_url:
+      url: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      dest: /tmp
+      mode: '0600'
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7'
+
+  - name: Install epel repo CentOS & RHEL
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+       - /tmp/epel-release-latest-7.noarch.rpm 
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7'
+
+  - name: Install a list of packages of clamav CentOS & RHEL
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+       - clamav-server 
+       - clamav-data 
+       - clamav-update 
+       - clamav-filesystem 
+       - clamav 
+       - clamav-scanner-systemd 
+       - clamav-devel 
+       - clamav-lib 
+       - clamav-server-systemd 
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+
+  - name: Copy clamav config file with owner and permissions Ubuntu
+    copy:
+      src: /root/playbooks/clamav/files/ubuntu_clamd.conf 
+      dest: /etc/clamav/clamd.conf 
+      owner: root 
+      group: root
+      mode: '0644'
+    when: ansible_distribution == "Ubuntu"
+  
+  - name: Copy clamav config file with owner and permissions CentOS & RHEL 
+    copy:
+      src: /root/playbooks/clamav/files/rhel_scan.conf 
+      dest: /etc/clamd.d/scan.conf
+      owner: root 
+      group: root
+      mode: '0644'
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+ 
+  - name: Copy database clamav config file with owner and permissions CentOS & RHEL 
+    copy:
+      src: /root/playbooks/clamav/files/rhel_freshclam.conf 
+      dest: /etc/freshclam.conf
+      owner: root 
+      group: root
+      mode: '0644'
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+  
+  - name: Copy freshclam scanner service file CentOS & RHEL 
+    copy:
+      src: /root/playbooks/clamav/files/rhel_freshclam.service
+      dest: /usr/lib/systemd/system/clam-freshclam.service
+      owner: root 
+      group: root
+      mode: '0644'
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+  
+  - name: Copy clamd@.service service file CentOS & RHEL 
+    copy:
+      src: /root/playbooks/clamav/files/rhel_clamd@.service
+      dest: /usr/lib/systemd/system/clamd@scan.service
+      owner: root 
+      group: root
+      mode: '0644'
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+ 
+  - name: Copy clamd.service service file CentOS & RHEL 
+    copy:
+      src: /root/playbooks/clamav/files/rhel_clamd.service
+      dest: /usr/lib/systemd/system/clamd.service
+      owner: root 
+      group: root
+      mode: '0644'
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+ 
+  - name: Run systemctl daemon-reload CentOS & RHEL
+    shell: systemctl daemon-reload && touch /root/.systemctl_daemon-reload
+    args:
+      creates: /root/.systemctl_daemon-reload
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+    
+  - name: Create Directories quarentine and scripts
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 0700
+    with_items:
+     - /var/tmp/clamav_quarantine 
+     - /root/scripts
+
+  - name: Ensure group clamav exists CentOS & RHEL
+    group:
+      name: clamav 
+      state: present 
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+
+  - name: Create clamav log directory CentOS & RHEL
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: root
+      group: clamav
+      mode: 0755
+    with_items:
+     - /var/log/clamav
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+    
+  - name: Create clamav lib directory CentOS & RHEL
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: clamupdate
+      group: clamupdate
+      mode: 0755
+    with_items:
+     - /var/lib/clamav
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+
+  - name: Copy script to move virus to quarentine dir
+    copy:
+      src: /root/playbooks/clamav/files/move_virus_to_quarantine.sh
+      dest: /root/scripts/
+      owner: root
+      group: root
+      mode: '0700'
+
+  - name: Copy script to run virus weekly
+    copy:
+      src: /root/playbooks/clamav/files/clamscan_weekly.sh
+      dest: /root/scripts/clamscan_weekly.sh
+      owner: root
+      group: root
+      mode: '0700'
+
+  - name: Enable a list of services of clamav Ubuntu
+    service:
+      name: "{{ item }}" 
+      enabled: yes
+    with_items:
+      - clamav-freshclam
+      - clamav-daemon
+    when: ansible_distribution == "Ubuntu"
+  
+  - name: Enable a list of services of clamav CentOS & RHEL 
+    service:
+      name: "{{ item }}" 
+      enabled: yes
+    with_items:
+      - clam-freshclam.service
+      - clamd.service
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+
+  - name: Check that /run/clamav doesn't exists Ubuntu
+    shell: ls -ld /run/clamav | wc -l  && touch /root/.run-clamav
+    args:
+      creates: /root/.run-clamav
+    register: dir_details 
+    when: ansible_distribution == "Ubuntu"
+  
+  #- name: Print value
+  #  debug:
+  #    msg: "Value: {{ dir_details.stdout }}"
+
+  - name: Run antivirus as root user Ubuntu
+    shell: aa-complain clamd
+    when: ansible_distribution == "Ubuntu" and dir_details.stdout == "0"
+
+  - pause:
+      minutes: 5
+    when: ansible_distribution == "Ubuntu" and dir_details.stdout == "0"
+
+  - name: Restart a list of services of clamav Ubuntu
+    service:
+      name: "{{ item }}" 
+      state: restarted
+    with_items:
+      - clamav-freshclam
+      - clamav-daemon
+    when: ansible_distribution == "Ubuntu" and dir_details.stdout == "0"
+
+  - name: Check if clamav-freshclam.service is running Ubuntu
+    command: systemctl status clamav-freshclam.service
+    ignore_errors: yes
+    changed_when: false
+    register: service_clamav_freshclam_status
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Report status of clamav-freshclam.service Ubuntu
+    fail:
+      msg: |
+        Service clamav-freshclam.service is not running.
+        Output of `systemctl status clamav-freshclam.service`:
+        {{ service_clamav_freshclam_status.stdout }}
+        {{ service_clamav_freshclam_status.stderr }}
+    when: ansible_distribution == "Ubuntu" and service_clamav_freshclam_status | failed 
+
+  - name: Check if clamav-daemon.service is running Ubuntu
+    command: systemctl status clamav-daemon.service
+    ignore_errors: yes
+    changed_when: false
+    register: service_clamav_daemon_status
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Report status of clamav-daemon.service Ubuntu
+    fail:
+      msg: |
+        Service clamav-daemon.service is not running.
+        Output of `systemctl status clamav-daemon.service`:
+        {{ service_clamav_daemon_status.stdout }}
+        {{ service_clamav_daemon_status.stderr }}
+    when: ansible_distribution == "Ubuntu" and service_clamav_daemon_status | failed 
+
+  - name: Start list of services of clamav CentOS & RHEL
+    service:
+      name: "{{ item }}"
+      state: started
+    with_items:
+      - clam-freshclam 
+      - clamd 
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat' 
+
+  - name: Weekly Scan Antivirus 
+    cron:
+      name: Weekly Scan Antivirus
+      weekday: 0 
+      minute: 0 
+      hour: 1 
+      user: root
+      job: "/root/scripts/clamscan_weekly.sh >/dev/null 2>&1"
+
+  - name: Move Virus to quarantine dir
+    cron:
+      name: Move Virus to quarantine dir 
+      user: root
+      job: "/root/scripts/move_virus_to_quarantine.sh >/dev/null 2>&1"
+

@@ -1,0 +1,43 @@
+---
+- hosts: node
+  tasks:
+  - name: creamos particiones
+    parted:
+     device: /dev/sdb
+     number: 1
+     state: present
+  - name: creamos vg
+    lvg:
+      vg: vg_data 
+      pvs: /dev/sdb1
+  - name: creamos lv_test1
+    lvol:
+      vg: vg_data 
+      lv: lv_test1
+      size: 1g
+  - name: Create fs test1
+    filesystem:
+      fstype: ext4
+      dev: /dev/vg_data/lv_test1
+  - name: Mount /test1
+    mount:
+      path: /test1 
+      src: /dev/vg_data/lv_test1
+      fstype: ext4
+      state: mounted
+  - name: creamos lv_test2
+    lvol:
+      vg: vg_data 
+      lv: lv_test2
+      size: 200m
+  - name: Create fs test2
+    filesystem:
+      fstype: ext4
+      dev: /dev/vg_data/lv_test2
+  - name: Mount /test2
+    mount:
+      path: /test2 
+      src: /dev/vg_data/lv_test2
+      fstype: ext4
+      state: mounted
+

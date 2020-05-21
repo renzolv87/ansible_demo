@@ -1,0 +1,7 @@
+---
+- hosts: node
+  tasks:
+  - name: Run a command as the renzo user
+    command: pwd
+    become: yes
+    become_user: renzo

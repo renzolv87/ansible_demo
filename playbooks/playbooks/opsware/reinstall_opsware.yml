@@ -1,0 +1,80 @@
+---
+- hosts: node
+  tasks:
+  - name: Check if /opt/opsware_new exists
+    stat: 
+      path: /opt/opsware_new
+    register: opt_opsware_new
+
+  - name: Check if /var/opt/opsware_new exists
+    stat: 
+      path: /var/opt/opsware_new
+    register: var_opt_opsware_new
+
+  - name: Stop service opsware
+    service:
+      name: opsware
+      state: stopped
+    when: opt_opsware_new.stat.exists and var_opt_opsware_new.stat.exists
+ 
+  - name: Copy /opt/opsware  
+    shell: cd /opt/opsware; tar -cvf - . | (cd /opt/opsware_new; tar -xvf -)
+    when: opt_opsware_new.stat.exists
+
+  - name: Copy /var/opt/opsware files
+    shell: cd /var/opt/opsware; tar -cvf - . | (cd /var/opt/opsware_new; tar -xvf -)   
+    when: var_opt_opsware_new.stat.exists
+ 
+  - name: Unmount /opt/opsware_new
+    mount:
+      path: /opt/opsware_new
+      state: unmounted
+    when: opt_opsware_new.stat.exists
+ 
+  - name: Unmount /var/opt/opsware_new
+    mount:
+      path: /var/opt/opsware_new
+      state: unmounted
+    when: var_opt_opsware_new.stat.exists
+ 
+  - name: Remove directories /opt/opsware, /var/opt/opsware, /opt/opsware_new & /var/opt/opsware_new
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+     - /opt/opsware 
+     - /var/opt/opsware 
+     - /opt/opsware_new
+     - /var/opt/opsware_new
+    when: opt_opsware_new.stat.exists and var_opt_opsware_new.stat.exists
+
+  - name: Creates directories /opt/opsware, /var/opt/opsware
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: 0775
+    with_items:
+     - /opt/opsware 
+     - /var/opt/opsware 
+    when: opt_opsware_new.stat.exists and var_opt_opsware_new.stat.exists
+ 
+  - name: Rename fs opsware in /etc/fstab
+    replace:
+      path: /etc/fstab
+      regexp: '/opt/opsware_new'
+      replace: '/opt/opsware'
+    when: opt_opsware_new.stat.exists and var_opt_opsware_new.stat.exists
+ 
+  - name: Mount /opt/opsware & /var/opt/opsware
+    command: mount -a
+    args:
+      warn: no
+    become: true
+    when: opt_opsware_new.stat.exists and var_opt_opsware_new.stat.exists
+ 
+  - name: Start service opsware
+    service:
+      name: opsware
+      state: started
+    when: opt_opsware_new.stat.exists and var_opt_opsware_new.stat.exists
+ 

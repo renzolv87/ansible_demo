@@ -1,0 +1,5 @@
+---
+- hosts: node
+  tasks:
+  - name: shutdown 
+    command: /usr/sbin/shutdown

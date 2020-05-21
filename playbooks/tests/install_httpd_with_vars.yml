@@ -1,0 +1,29 @@
+---
+- hosts: node
+  #vars:
+  #  name_package: httpd
+  tasks:
+  - name: instala httpd
+    package:
+      name:
+        - "{{ name_package }}" 
+      state: latest    
+
+  - name: verifico si existe index.html 
+    stat:
+       path: "/var/www/html/index.html" 
+    register: st_index
+
+  - name: copia index
+    copy:
+     src: "/etc/ansible/playbooks/tests/index.html"
+     dest: "/var/www/html/"
+    when: not st_index.stat.exists
+
+  - name: restart httpd
+    service:
+     name: httpd
+     state: restarted
+     enabled: yes 
+    when: not st_index.stat.exists
+

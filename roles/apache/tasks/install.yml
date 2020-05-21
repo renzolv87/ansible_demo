@@ -1,0 +1,6 @@
+---
+#instalamos httpd
+- name: Instalar {{ package_name }} 
+  yum:
+   name: "{{ package_name }}" 
+#   state: latest

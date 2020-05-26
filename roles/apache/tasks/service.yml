@@ -1,4 +1,0 @@
----
-#service httpd enabled
-- name: service httpd started and enabled
-  service: name=httpd state=started

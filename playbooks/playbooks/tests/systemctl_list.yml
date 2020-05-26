@@ -1,7 +1,0 @@
----
-- hosts: node
-  tasks:
-  - name: list services
-    command: systemctl list-unit-files
-    register: out
-  - debug: var=out.stdout_lines

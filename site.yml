@@ -1,5 +1,0 @@
----
-- hosts: node
-  roles:
-   - apache
-#  - ntp

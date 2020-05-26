@@ -1,0 +1,4 @@
+---
+# handlers file for apache
+- name: restart renzohttpd service
+  service: name=httpd state=restarted

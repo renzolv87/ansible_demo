@@ -1,0 +1,9 @@
+---
+- hosts: node
+  vars: 
+   motd_messages: "Hola!!!! Bienvenido\n"
+  tasks:
+  - name: Crea fichero /etc/motd
+    copy:
+     dest: /etc/motd
+     content: "{{ motd_messages}}"

@@ -1,0 +1,6 @@
+---
+#instalamos httpd
+- name: instalamos httpd
+  package:
+   name: httpd
+   #state: latest

@@ -28,9 +28,10 @@ inventory     = ./hosts
 <pre>
 group_vars
 host_Vars
+</pre>
 
-mkdir group_vars
-cd group_vars
+* Ansible vault para encriptar y guardar información sensible:
+<pre>
 ansible-vault create nodes.yml
 
 ansible-vault edit nodes.yml 
@@ -45,7 +46,7 @@ ansible_winrm_server_cert_validation: ignore
  * **Online:** https://docs.ansible.com/ansible/latest/modules/service_module.html#service-module
  * **On server:** ansible-doc service
 
-* Si tuviéramos encriptado las variables:
+* Si que lanzar modulos con yamls encriptados:
 <pre>
 ansible -m win_ping windows --ask-vault-pass
 </pre>
@@ -71,8 +72,8 @@ ansible -m service -a "name=crond state=started" centos -b
 -rw-r--r-- 1 root root  14 May 21 12:30 hosts
 [renzo@ansible ansible_demo]$ 
 
-ansible-playbook playbooks/demo.yml --check
-ansible-playbook playbooks/demo.yml 
+ansible-playbook playbooks/motd.yml --check
+ansible-playbook playbooks/motd.yml
 </pre>
 
 * Roles:
@@ -90,36 +91,15 @@ ansible-galaxy init apache
   * **vars**: Tanto vars como defaults guardan variables pero las variables en vars tienen mayor prioridad.
   * Todos tienen el main.yml que es donde inicia la lectura de cada código.
 
-* En cliente windows para ver usuarios:
-<pre>
-Server Manager -> Tools -> Computer Management -> Local Users and Groups -> Users
-</pre>
-
 * Rol run:
 <pre>
-ansible-playbook masterplaybooks/win_apache.yml --extra-vars="hosts=windows" --tags=notepad --check
-ansible-playbook masterplaybooks/win_apache.yml --extra-vars="hosts=windows" --tags=notepad
+ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=centos" --tags=install --check 
+ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=centos" --tags=install
 
-ansible-playbook masterplaybooks/win_apache.yml --extra-vars="hosts=windows"
-</pre>
-
-* En cmd:
-<pre>
-C:\Program Files (x86)\Apache Software Foundation\Apache2.2\bin>httpd.exe -v
-Server version: Apache/2.2.25 (Win32)
-Server built:   Jul 10 2013 01:52:12
-
-C:\Program Files (x86)\Apache Software Foundation\Apache2.2\bin>
-
-"C:\Program Files (x86)\Apache Software Foundation\Apache2.2\bin\httpd.exe" -k stop
-"C:\Program Files (x86)\Apache Software Foundation\Apache2.2\bin\httpd.exe" -k uninstall
-del "C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\index.html"
+ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=centos"
 </pre>
 
 * Probar que funciona, abrir navegador:
 <pre>
 http://localhost/
 </pre>
-
-* Más Ejemplos:
-  * https://geekflare.com/ansible-playbook-windows-example/

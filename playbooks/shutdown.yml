@@ -1,5 +1,6 @@
 ---
-- hosts: node
+- hosts: nodes
+  become: true
   tasks:
   - name: shutdown 
-    command: /usr/sbin/shutdown
+    command: /usr/sbin/shutdown -h now

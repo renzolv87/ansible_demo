@@ -1,5 +1,6 @@
 ---
 - hosts: node
+  become: true
   tasks:
   #- name: instala httpd
   #  action: yum name=httpd state=installed

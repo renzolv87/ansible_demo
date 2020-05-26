@@ -1,5 +1,5 @@
 ---
-- hosts: node
+- hosts: nodes
   tasks:
     - action: shell /bin/ls /tmp
       register: list_tmp_files

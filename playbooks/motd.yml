@@ -1,5 +1,6 @@
 ---
-- hosts: node
+- hosts: nodes
+  become: true
   vars: 
    motd_messages: "Hola!!!! Bienvenido\n"
   tasks:

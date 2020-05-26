@@ -1,5 +1,6 @@
 ---
-- hosts: node
+- hosts: nodes
+  become: true
   tasks:
    - name: Stop service firewalld
      service:

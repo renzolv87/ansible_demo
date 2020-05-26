@@ -1,7 +1,5 @@
 ---
-- hosts: node
-  remote_user: root
+- hosts: nodes
   tasks:
     - name: test connection
       ping:
-      remote_user: root

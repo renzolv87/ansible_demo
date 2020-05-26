@@ -1,3 +1,4 @@
-- hosts: node
+- hosts: "{{ hosts }}"
+  become: true
   roles:
    - apache

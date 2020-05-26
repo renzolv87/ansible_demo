@@ -4,10 +4,9 @@
 
 # Instalar en Linux
 ## En Ansible Master
-* https://www.vultr.com/docs/how-to-install-and-configure-ansible-on-centos-7-for-use-with-windows-server
-* https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html
+* https://blog.deiser.com/es/primeros-pasos-con-ansible
 
-* ansible.cfg:
+* Ejemplo de inventario:
 <pre>
 [root@ansible ansible_windows]# cat ansible.cfg
 [defaults]
@@ -24,15 +23,12 @@ inventory     = ./hosts
 [root@ansible ansible_windows]# 
 </pre>
 
-* En el servidor master de ansible instalamos pywinrm:
+* Variables a nivel de inventario:
+  * https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
 <pre>
-yum install epel-release
-yum -y install python-pip pip
-pip install pywinrm
-</pre>
+group_vars
+host_Vars
 
-* Configuramos las variables de conexión en el groupvars:
-<pre>
 mkdir group_vars
 cd group_vars
 ansible-vault create nodes.yml
@@ -45,28 +41,9 @@ ansible_connection: winrm
 ansible_winrm_server_cert_validation: ignore
 </pre>
 
-* Validamos que llegamos al servidor windows:
-<pre>
-echo test | telnet windows 5986
-
-echo test | telnet windows 5985
-</pre>
-
-* Ejecutamos un ping:
-<pre>
-[root@ansible ansible_windows]# pwd
-/etc/ansible_windows
-[root@ansible ansible_windows]# ansible -m win_ping windows
-windows | SUCCESS => {
-    "changed": false, 
-    "ping": "pong"
-}
-[root@ansible ansible_windows]# 
-</pre>
-
-* Ansible windows modules:
- * **Online:** https://docs.ansible.com/ansible/latest/modules/list_of_windows_modules.html
- * **On server:** ansible-doc win_copy
+* Ansible  modules: https://docs.ansible.com/ansible/latest/modules/modules_by_category.html
+ * **Online:** https://docs.ansible.com/ansible/latest/modules/service_module.html#service-module
+ * **On server:** ansible-doc service
 
 * Si tuviéramos encriptado las variables:
 <pre>
@@ -76,25 +53,23 @@ ansible -m win_ping windows --ask-vault-pass
 * Facters:
 <pre>
 ansible -m setup nodes
-
-ansible -m win_disk_facts windows | more
 </pre>
 
-* En el cliente windows vamos a Services, buscamos Print Spooler y vemos que esta Running y lo pararemos desde ansible:
+* Ejecutar modulos Ad-hoc
 <pre>
-ansible -m win_service -a "name=spooler state=stopped" windows
-
-ansible -m win_service -a "name=spooler state=started" windows
+ansible -m service -a "name=crond state=stopped" centos
+ansible -m service -a "name=crond state=stopped" centos -b
+ansible -m service -a "name=crond state=started" centos -b
 </pre>
 
 * Playbooks:
 <pre>
-[root@ansible ansible_windows]# pwd
-/etc/ansible_windows
-[root@ansible ansible_windows]# ls -l ansible.cfg hosts
+[renzo@ansible ansible_demo]$ pwd
+/etc/ansible_demo
+[renzo@ansible ansible_demo]$ ls -l ansible.cfg hosts
 -rw-r--r-- 1 root root 184 May 24 01:03 ansible.cfg
--rw-r--r-- 1 root root  16 May 24 00:06 hosts
-[root@ansible ansible_windows]# 
+-rw-r--r-- 1 root root  14 May 21 12:30 hosts
+[renzo@ansible ansible_demo]$ 
 
 ansible-playbook playbooks/demo.yml --check
 ansible-playbook playbooks/demo.yml 

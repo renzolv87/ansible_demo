@@ -1,6 +1,7 @@
 ---
 #instalamos httpd
-- name: instalamos httpd
-  package:
-   name: httpd
-   #state: latest
+- name: instalamos apache
+  package: 
+    name: "{{ item }}"
+    #state: latest
+  with_items: "{{ apache_package }}"

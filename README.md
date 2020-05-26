@@ -1,81 +1,8 @@
-- [Instalar en Windows](#instalar-en-windows)
+- [Instalar en Linux](#instalar-en-linux)
   * [En el cliente Windows](#en-el-cliente-windows)
   * [En Ansible Master](#en-ansible-master)
 
-# Instalar en Windows
-
-## En el cliente Windows
-* **Documentación oficial:** https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html
-* **Preguntas Frecuentes:** https://docs.ansible.com/ansible/latest/user_guide/windows_faq.html
-
-* Validar PowerShell Version
-<pre>
-PS C:\Users\rlujan> $PSVersionTable.PSVersion
-
-Major  Minor  Build  Revision
------  -----  -----  --------
-5      1      17763  592
-
-
-PS C:\Users\rlujan>
-</pre>
-
-* Abrir como administrador Windows PowerShell ISE
-
-* Ejecutamos este power shell que upgradea power shell si es necesario y hace un reinicio:
-<pre>
-$url = "https://raw.githubusercontent.com/jborean93/ansible-windows/master/scripts/Upgrade-PowerShell.ps1"
-$file = "$env:temp\Upgrade-PowerShell.ps1"
-$username = "rlujan"
-$password = "rlujan"
-
-(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
-Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
-
-#Version can be 3.0, 4.0 or 5.1
-&$file -Version 5.1 -Username $username -Password $password -Verbose
-</pre>
-
-* Remove auto logon and set the execution policy back to the default of Restricted. You can do this with the following PowerShell commands:
-<pre>
-#This isn't needed but is a good security practice to complete
-Set-ExecutionPolicy -ExecutionPolicy Restricted -Force
-
-$reg_winlogon_path = "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon"
-Set-ItemProperty -Path $reg_winlogon_path -Name AutoAdminLogon -Value 0
-Remove-ItemProperty -Path $reg_winlogon_path -Name DefaultUserName -ErrorAction SilentlyContinue
-Remove-ItemProperty -Path $reg_winlogon_path -Name DefaultPassword -ErrorAction SilentlyContinue
-</pre>
-
-* **OMITIR:** Si tuviéramos versión de power shell 3 hay que ejecutar el WinRM Memory Hotfix
-<pre>
-$url = "https://raw.githubusercontent.com/jborean93/ansible-windows/master/scripts/Install-WMF3Hotfix.ps1"
-$file = "$env:temp\Install-WMF3Hotfix.ps1"
-
-(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
-powershell.exe -ExecutionPolicy ByPass -File $file -Verbose
-</pre>
-
-* WinRM Setup
-<pre>
-$url = "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
-$file = "$env:temp\ConfigureRemotingForAnsible.ps1"
-
-(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
-
-powershell.exe -ExecutionPolicy ByPass -File $file
-</pre>
-
-* Para ver los WinRM Listeners:
-<pre>
-winrm enumerate winrm/config/Listener
-</pre>
-
-* Validamos que funciona la comunicación:
-<pre>
-winrs -r:http://windows:5985/wsman -u:rlujan -p:rlujan ipconfig
-</pre>
-
+# Instalar en Linux
 ## En Ansible Master
 * https://www.vultr.com/docs/how-to-install-and-configure-ansible-on-centos-7-for-use-with-windows-server
 * https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html

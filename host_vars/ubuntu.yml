@@ -1,0 +1,4 @@
+apache_package: 
+- aptitude
+- apache2
+apache_service: apache2 

@@ -1,10 +1,10 @@
 - [Linux](#linux)
   * [Instalar y configurar Ansible Master](#instalar-y-configurar-ansible-master)
   * [Variables a nivel de inventario](#variables-a-nivel-de-inventario)
-  * [Ansible vault para encriptar y guardar información sensible:](#ansible-vault-para-encriptar-y-guardar-información-sensible:)
-  * [Ansible Modules:](#ansible-modules:)
-  * [Playbooks:](#playbooks:)
-  * [Roles:](#roles:)
+  * [Ansible vault para encriptar y guardar información sensible](#ansible-vault-para-encriptar-y-guardar-información-sensible)
+  * [Ansible Modules](#ansible-modules)
+  * [Playbooks:](#playbooks)
+  * [Roles:](#roles)
 
 # Linux
 ## Instalar y configurar Ansible Master
@@ -35,7 +35,7 @@ group_vars
 host_Vars
 </pre>
 
-## Ansible vault para encriptar y guardar información sensible:
+## Ansible vault para encriptar y guardar información sensible
 <pre>
 ansible-vault create nodes.yml
 
@@ -47,7 +47,7 @@ ansible_connection: winrm
 ansible_winrm_server_cert_validation: ignore
 </pre>
 
-## Ansible Modules: 
+## Ansible Modules
  * **Todos:** https://docs.ansible.com/ansible/latest/modules/modules_by_category.html
  * **Online:** https://docs.ansible.com/ansible/latest/modules/service_module.html#service-module
  * **On server:** ansible-doc service
@@ -69,7 +69,7 @@ ansible -m service -a "name=crond state=stopped" centos -b
 ansible -m service -a "name=crond state=started" centos -b
 </pre>
 
-## Playbooks:
+## Playbooks
 <pre>
 [renzo@ansible ansible_demo]$ pwd
 /etc/ansible_demo
@@ -84,7 +84,7 @@ ansible-playbook playbooks/motd.yml
 
 * **Idempotencia:** es la propiedad para realizar una acción determinada varias veces y aun así conseguir el mismo resultado que se obtendría si se realizase una sola vez.
 
-## Roles:
+## Roles
 <pre>
 ansible-galaxy init apache
 </pre>

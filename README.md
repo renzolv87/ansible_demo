@@ -60,6 +60,9 @@ ansible -m win_ping windows --ask-vault-pass
 * **Facters:**
 <pre>
 ansible -m setup nodes
+
+ansible -m setup -a "filter=*ipv4*" nodes
+ansible -m setup -a "filter=ansible_hostname" nodes
 </pre>
 
 * **Ejecutar modulos Ad-hoc:**

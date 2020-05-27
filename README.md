@@ -4,7 +4,7 @@
   * [Ansible vault para encriptar y guardar información sensible:](#ansible-vault-para-encriptar-y-guardar-información-sensible:)
   * [Ansible Modules:](#ansible-modules:)
   * [Playbooks:](#playbooks:)
-  * [Roles:](#roles-)
+  * [Roles:](#roles:)
 
 # Linux
 ## Instalar y configurar Ansible Master

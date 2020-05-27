@@ -1,4 +1,7 @@
 ---
 # handlers file for apache
-- name: restart renzohttpd service
-  service: name="{{ apache_service }}" state=restarted
+- name: restart apache service
+  service: 
+    name: "{{ apache_service }}" 
+    state: restarted
+  listen: "restart renzohttpd service"

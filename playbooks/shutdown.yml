@@ -1,6 +1,7 @@
 ---
 - hosts: nodes
   become: true
+  gather_facts: no
   tasks:
-  - name: shutdown 
-    command: /usr/sbin/shutdown -h now
+    - name: shutdown server
+      command: /sbin/shutdown -h now

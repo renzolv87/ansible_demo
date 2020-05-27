@@ -8,9 +8,10 @@
 
 * Ejemplo de inventario:
 <pre>
-[root@ansible ansible_windows]# cat ansible.cfg
+[renzo@ansible ansible_demo]$ cat ansible.cfg
 [defaults]
-roles_path    = /etc/ansible/roles:/usr/share/ansible/roles
+remote_user   = renzo 
+roles_path    = ./roles
 inventory     = ./hosts
 [privilege_escalation]
 [paramiko_connection]
@@ -20,7 +21,7 @@ inventory     = ./hosts
 [selinux]
 [colors]
 [diff]
-[root@ansible ansible_windows]# 
+[renzo@ansible ansible_demo]$ 
 </pre>
 
 * Variables a nivel de inventario:
@@ -46,7 +47,7 @@ ansible_winrm_server_cert_validation: ignore
  * **Online:** https://docs.ansible.com/ansible/latest/modules/service_module.html#service-module
  * **On server:** ansible-doc service
 
-* Si que lanzar modulos con yamls encriptados:
+* Si he de lanzar modulos con yamls encriptados:
 <pre>
 ansible -m win_ping windows --ask-vault-pass
 </pre>
@@ -99,7 +100,7 @@ ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=c
 ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=centos"
 </pre>
 
-* Probar que funciona, abrir navegador:
+* Validar que funciona, abrir navegador:
 <pre>
 http://localhost/
 </pre>

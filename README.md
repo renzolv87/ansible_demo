@@ -1,9 +1,13 @@
-- [Instalar en Linux](#instalar-en-linux)
-  * [En el cliente Windows](#en-el-cliente-windows)
-  * [En Ansible Master](#en-ansible-master)
+- [Linux](#linux)
+  * [Instalar y configurar Ansible Master](#instalar-y-configurar-ansible-master)
+  * [Variables a nivel de inventario](#variables-a-nivel-de-inventario)
+  * [Ansible vault para encriptar y guardar información sensible:](#ansible-vault-para-encriptar-y-guardar-información-sensible:)
+  * [Ansible Modules:](#ansible-modules:)
+  * [Playbooks:](#playbooks:)
+  * [Roles:](#roles-)
 
-# Instalar en Linux
-## En Ansible Master
+# Linux
+## Instalar y configurar Ansible Master
 * https://blog.deiser.com/es/primeros-pasos-con-ansible
 
 * Ejemplo de inventario:
@@ -24,14 +28,14 @@ inventory     = ./hosts
 [renzo@ansible ansible_demo]$ 
 </pre>
 
-* Variables a nivel de inventario:
+## Variables a nivel de inventario
   * https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
 <pre>
 group_vars
 host_Vars
 </pre>
 
-* Ansible vault para encriptar y guardar información sensible:
+## Ansible vault para encriptar y guardar información sensible:
 <pre>
 ansible-vault create nodes.yml
 
@@ -43,28 +47,29 @@ ansible_connection: winrm
 ansible_winrm_server_cert_validation: ignore
 </pre>
 
-* Ansible  modules: https://docs.ansible.com/ansible/latest/modules/modules_by_category.html
+## Ansible Modules: 
+ * **Todos:** https://docs.ansible.com/ansible/latest/modules/modules_by_category.html
  * **Online:** https://docs.ansible.com/ansible/latest/modules/service_module.html#service-module
  * **On server:** ansible-doc service
 
-* Si he de lanzar modulos con yamls encriptados:
+* **Si he de lanzar modulos con yamls encriptados:**
 <pre>
 ansible -m win_ping windows --ask-vault-pass
 </pre>
 
-* Facters:
+* **Facters:**
 <pre>
 ansible -m setup nodes
 </pre>
 
-* Ejecutar modulos Ad-hoc
+* **Ejecutar modulos Ad-hoc:**
 <pre>
 ansible -m service -a "name=crond state=stopped" centos
 ansible -m service -a "name=crond state=stopped" centos -b
 ansible -m service -a "name=crond state=started" centos -b
 </pre>
 
-* Playbooks:
+## Playbooks:
 <pre>
 [renzo@ansible ansible_demo]$ pwd
 /etc/ansible_demo
@@ -77,12 +82,14 @@ ansible-playbook playbooks/motd.yml --check
 ansible-playbook playbooks/motd.yml
 </pre>
 
-* Roles:
+* **Idempotencia:** es la propiedad para realizar una acción determinada varias veces y aun así conseguir el mismo resultado que se obtendría si se realizase una sola vez.
+
+## Roles:
 <pre>
 ansible-galaxy init apache
 </pre>
 
-* Componentes de un rol:
+* **Componentes de un rol:**
   * **defaults**: Data sobre el rol / aplicación (variables por defecto).
   * **files**: Poner ficheros estáticos aquí. Ficheros que copiaremos a los clientes.
   * **handlers**: Tareas que se basan en algunas acciones. Disparadores (Triggers). Ex: si cambias httpd.conf -> reinicia el servicio.
@@ -92,7 +99,7 @@ ansible-galaxy init apache
   * **vars**: Tanto vars como defaults guardan variables pero las variables en vars tienen mayor prioridad.
   * Todos tienen el main.yml que es donde inicia la lectura de cada código.
 
-* Rol run:
+* **Rol run:**
 <pre>
 ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=centos" --tags=install --check 
 ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=centos" --tags=install
@@ -100,7 +107,7 @@ ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=c
 ansible-playbook masterplaybooks/masterplaybook_apache.yml --extra-vars="hosts=centos"
 </pre>
 
-* Validar que funciona, abrir navegador:
+* **Validar que funciona, abrir navegador:**
 <pre>
 http://localhost/
 </pre>

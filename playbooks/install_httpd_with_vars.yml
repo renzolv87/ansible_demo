@@ -1,8 +1,8 @@
 ---
-- hosts: nodes
+- hosts: "{{ hosts }}" 
   become: true
-  #vars:
-  #  name_package: httpd
+  vars:
+    name_package: httpd
   tasks:
   - name: instala httpd
     package:

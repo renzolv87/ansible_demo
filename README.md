@@ -32,7 +32,7 @@ inventory     = ./hosts
   * https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
 <pre>
 group_vars
-host_Vars
+host_vars
 </pre>
 
 ## Ansible vault para encriptar y guardar información sensible

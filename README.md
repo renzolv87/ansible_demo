@@ -70,6 +70,8 @@ ansible -m setup -a "filter=ansible_hostname" nodes
 ansible -m service -a "name=crond state=stopped" centos
 ansible -m service -a "name=crond state=stopped" centos -b
 ansible -m service -a "name=crond state=started" centos -b
+
+ansible -m copy -a "src=/home/renzo/joan/ansible_demo/kk dest=/tmp/kk owner=renzo group=renzo mode=0444" centos
 </pre>
 
 ## Playbooks
